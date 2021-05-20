@@ -1,7 +1,9 @@
 //导入http模块
 const http = require('http')
-//导入
+//导入cheerio模块
 const cheerio = require('cheerio')
+//导入download模块
+const download = require('download')
 const HOST = 'http://web.itheima.com'
 //创建请求对象
 let request = http.request(HOST + '/teacher.html#ajavaee', res => {
@@ -23,8 +25,13 @@ let request = http.request(HOST + '/teacher.html#ajavaee', res => {
         //     // console.log(HOST+$(item).attr('src'));
         //     imgs.push(HOST + $(item).attr('src'))
         // })
-        let imgs = Array.prototype.map.call($('.maincon .clears .main_pic > img'), item => HOST + $(item).attr('src'))
-        console.log(imgs);
+        //使用encodeURI对url中的中文进行base64编码
+        let imgs = Array.prototype.map.call($('.maincon .clears .main_pic > img'), item => HOST + encodeURI($(item).attr('src')))
+        // console.log(imgs);
+        //download(url, 路径)
+        Promise.all(imgs.map(x=>download(x, 'dist'))).then(()=>{
+            console.log('files download!');
+        })
     })
 })
 //发送请求
